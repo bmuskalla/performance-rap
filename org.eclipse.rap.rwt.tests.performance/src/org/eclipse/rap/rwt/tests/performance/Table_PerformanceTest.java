@@ -1,3 +1,5 @@
+package org.eclipse.rap.rwt.tests.performance;
+
 import org.eclipse.rap.rwt.performance.PerformanceTest;
 import org.eclipse.rwt.Fixture;
 import org.eclipse.swt.SWT;
@@ -6,6 +8,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+
 
 public class Table_PerformanceTest extends PerformanceTest {
 
