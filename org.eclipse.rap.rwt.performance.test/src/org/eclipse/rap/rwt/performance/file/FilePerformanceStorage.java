@@ -10,19 +10,20 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.eclipse.rap.rwt.performance.IPerformanceStorage;
-import org.eclipse.rap.rwt.performance.PerformanceResult;
 
 public class FilePerformanceStorage implements IPerformanceStorage {
 
 	private String FILE_NAME = "/home/bmuskalla/Desktop/results.txt";
 
-	public void putResults(final String testName, final List frames) {
+	public void putResults(final TestCase test, final List frames) {
 		Writer out = null;
 		try {
 			FileWriter writer = new FileWriter(FILE_NAME, true);
 			out = new BufferedWriter(writer);
-			writeResult(out, testName, frames);
+			writeResult(out, test, frames);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -33,8 +34,10 @@ public class FilePerformanceStorage implements IPerformanceStorage {
 		}
 	}
 
-	private void writeResult(Writer out, String testName, List frames)
+	private void writeResult(Writer out, TestCase test, List frames)
 			throws IOException {
+		String className = test.getClass().getName();
+		String testName = className + "." + test.getName();
 		writeTestname(out, testName);
 		writeSeparator(out);
 		writeResults(out, frames);

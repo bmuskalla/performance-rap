@@ -10,13 +10,11 @@ public class PerformanceMeter {
 	private long startTime;
 	private long endTime;
 	private List frames;
-	private final String testName;
+	private final TestCase testCase;
 
 	public PerformanceMeter(TestCase test) {
 		frames = new ArrayList();
-		String testMethod = test.getName();
-		String className = test.getClass().getName();
-		testName = className + "." + testMethod;
+		testCase = test;
 	}
 	
 	public void start() {
@@ -43,14 +41,14 @@ public class PerformanceMeter {
 			min = Math.min(min, frameTime);
 			max = Math.max(max, frameTime);
 		}
-		System.out.println("Testcase: " + testName);
+		System.out.println("Testcase: " + testCase);
 		System.out.println("Average Time: " + formatTime(sum/frames.size()));
 		System.out.println("Min Time: " + formatTime(min));
 		System.out.println("Max Time: " + formatTime(max));
 		System.out.println("Total time: " + formatTime(sum));
 		System.out.println("");
 		IPerformanceStorage storage = StorageFactory.createPerformanceStorage();
-		storage.putResults( testName, frames );
+		storage.putResults( testCase, frames );
 	}
 	
 	private String formatTime(long time) {
