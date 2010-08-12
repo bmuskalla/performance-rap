@@ -2,7 +2,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.rap.rwt.performance.PerformanceTest;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 
 public class Tree_PerformanceTest extends PerformanceTest {
 
