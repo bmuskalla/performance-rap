@@ -6,8 +6,7 @@ import junit.framework.TestCase;
 
 public interface IPerformanceStorage {
 
-	void putResults(TestCase test, List frames);
+  void putResults( TestCase test, List frames );
 
-	List getAggregatedResults(String testName);
-	
+  List getAggregatedResults( String testName );
 }
