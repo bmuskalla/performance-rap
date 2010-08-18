@@ -8,16 +8,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.eclipse.rap.rwt.performance.IPerformanceStorage;
-import org.eclipse.rap.rwt.performance.ITestExecutionResult;
-import org.eclipse.rap.rwt.performance.TestExecutionResult;
+import org.eclipse.rap.rwt.performance.result.ITestExecutionResult;
+import org.eclipse.rap.rwt.performance.result.TestExecutionResult;
 
 public class FilePerformanceStorage implements IPerformanceStorage {
 
@@ -109,24 +108,28 @@ public class FilePerformanceStorage implements IPerformanceStorage {
 
   public ITestExecutionResult[] getAggregatedResults() {
     String[] lines = getFileContents();
-    Set tests = new HashSet();
+    Map results = new HashMap();
     for( int i1 = 0; i1 < lines.length; i1++ ) {
       String string = lines[ i1 ];
       String[] columns = string.split( "\\|" );
-      tests.add( columns[ 0 ] );
-    }
-    
-    List results = new ArrayList();
-    for( Iterator iterator = tests.iterator(); iterator.hasNext(); ) {
-      String testName = ( String )iterator.next();
-      ITestExecutionResult result = new TestExecutionResult( testName );
-      List aggregatedResults = getAggregatedResults( testName );
-      for( int i = 0; i < aggregatedResults.size(); i++ ) {
-        Long iterationTime = ( Long )aggregatedResults.get( i );
-        result.addIteration( iterationTime.longValue() );
+      String testName = columns[ 0 ];
+      
+      ITestExecutionResult result;
+      if( results.containsKey( testName )) {
+        result = ( ITestExecutionResult )results.get( testName );
+      } else {
+        result = new TestExecutionResult( testName );
       }
-      results.add( result );
+      
+      long sum = 0;
+      for( int i = 1; i < columns.length; i++ ) {
+        String frame = columns[ i ];
+        long iterationTime = Long.valueOf( frame ).longValue();
+        sum = sum + iterationTime;
+      }
+      result.addIteration( sum );
+      results.put( testName, result );
     }
-    return ( ITestExecutionResult[] )results.toArray( new ITestExecutionResult[ 0 ] );
+    return (org.eclipse.rap.rwt.performance.result.ITestExecutionResult[] )results.values().toArray( new ITestExecutionResult[ 0 ] );
   }
 }

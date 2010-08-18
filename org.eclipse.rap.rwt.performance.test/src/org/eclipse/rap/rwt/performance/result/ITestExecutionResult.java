@@ -1,4 +1,4 @@
-package org.eclipse.rap.rwt.performance;
+package org.eclipse.rap.rwt.performance.result;
 
 
 public interface ITestExecutionResult {
@@ -7,8 +7,10 @@ public interface ITestExecutionResult {
 
   public void addIteration( long ms );
 
-  public long computeSum();
+  public long computeAverage();
 
   public long[] getIterations();
+
+  public long computeMedian();
   
 }

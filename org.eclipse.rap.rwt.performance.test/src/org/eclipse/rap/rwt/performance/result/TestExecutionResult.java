@@ -1,6 +1,7 @@
-package org.eclipse.rap.rwt.performance;
+package org.eclipse.rap.rwt.performance.result;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TestExecutionResult implements ITestExecutionResult {
@@ -21,13 +22,13 @@ public class TestExecutionResult implements ITestExecutionResult {
     iterations.add( Long.valueOf( ms ) );
   }
 
-  public long computeSum() {
+  public long computeAverage() {
     long sum = 0;
     for( int i = 0; i < iterations.size(); i++ ) {
       Long iterationTime = ( Long )iterations.get( i );
       sum = sum + iterationTime.longValue();
     }
-    return sum;
+    return sum / iterations.size();
   }
 
   public long[] getIterations() {
@@ -35,6 +36,21 @@ public class TestExecutionResult implements ITestExecutionResult {
     for( int i = 0; i < iterations.size(); i++ ) {
       Long iteration = ( Long )iterations.get( i );
       result[ i ] = iteration.longValue();
+    }
+    return result;
+  }
+
+  public long computeMedian() {
+    Long[] sortedList = ( Long[] )iterations.toArray( new Long[ 0 ] );
+    Arrays.sort( sortedList );
+    int median = sortedList.length / 2;
+    long result;
+    long rightValue = sortedList[ median ].longValue();
+    if( sortedList.length % 2 == 1 ) {
+      result = rightValue;
+    } else {
+      long leftValue = sortedList[ median - 1 ].longValue();
+      result = ( leftValue + rightValue ) / 2;
     }
     return result;
   }

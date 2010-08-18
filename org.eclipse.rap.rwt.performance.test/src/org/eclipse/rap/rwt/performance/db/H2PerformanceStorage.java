@@ -11,7 +11,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.rap.rwt.performance.IPerformanceStorage;
-import org.eclipse.rap.rwt.performance.ITestExecutionResult;
+import org.eclipse.rap.rwt.performance.result.ITestExecutionResult;
 
 public class H2PerformanceStorage implements IPerformanceStorage {
 
