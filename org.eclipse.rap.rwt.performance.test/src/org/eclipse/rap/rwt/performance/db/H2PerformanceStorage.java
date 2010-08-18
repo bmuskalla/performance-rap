@@ -11,6 +11,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.rap.rwt.performance.IPerformanceStorage;
+import org.eclipse.rap.rwt.performance.ITestExecutionResult;
 
 public class H2PerformanceStorage implements IPerformanceStorage {
 
@@ -109,4 +110,9 @@ public class H2PerformanceStorage implements IPerformanceStorage {
       e.printStackTrace();
     }
   }
+
+  public ITestExecutionResult[] getAggregatedResults() {
+    throw new UnsupportedOperationException();
+  }
+
 }

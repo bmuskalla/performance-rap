@@ -6,5 +6,6 @@ public class StorageFactory {
 
   public static IPerformanceStorage createPerformanceStorage() {
     return new FilePerformanceStorage();
+//    return new JUnitPerformanceStorage();
   }
 }

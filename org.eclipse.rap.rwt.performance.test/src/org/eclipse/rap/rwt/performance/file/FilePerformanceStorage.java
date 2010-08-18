@@ -8,11 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.eclipse.rap.rwt.performance.IPerformanceStorage;
+import org.eclipse.rap.rwt.performance.ITestExecutionResult;
+import org.eclipse.rap.rwt.performance.TestExecutionResult;
 
 public class FilePerformanceStorage implements IPerformanceStorage {
 
@@ -75,7 +80,7 @@ public class FilePerformanceStorage implements IPerformanceStorage {
             String frame = values[ i ];
             sum = sum + Long.valueOf( frame ).longValue();
           }
-          results.add( Long.valueOf( sum ) );
+          results.add( Long.valueOf( sum / values.length - 1 ) );
         }
       }
       fr.close();
@@ -85,5 +90,43 @@ public class FilePerformanceStorage implements IPerformanceStorage {
       e.printStackTrace();
     }
     return results;
+  }
+
+  private String[] getFileContents() {
+    List lines = new ArrayList();
+    try {
+      FileReader fr = new FileReader( FILE_NAME );
+      BufferedReader br = new BufferedReader( fr );
+      String s;
+      while( ( s = br.readLine() ) != null ) {
+        lines.add( s );
+      }
+    } catch( Exception e ) {
+      e.printStackTrace();
+    }
+    return ( String[] )lines.toArray( new String[ lines.size() ] );
+  }
+
+  public ITestExecutionResult[] getAggregatedResults() {
+    String[] lines = getFileContents();
+    Set tests = new HashSet();
+    for( int i1 = 0; i1 < lines.length; i1++ ) {
+      String string = lines[ i1 ];
+      String[] columns = string.split( "\\|" );
+      tests.add( columns[ 0 ] );
+    }
+    
+    List results = new ArrayList();
+    for( Iterator iterator = tests.iterator(); iterator.hasNext(); ) {
+      String testName = ( String )iterator.next();
+      ITestExecutionResult result = new TestExecutionResult( testName );
+      List aggregatedResults = getAggregatedResults( testName );
+      for( int i = 0; i < aggregatedResults.size(); i++ ) {
+        Long iterationTime = ( Long )aggregatedResults.get( i );
+        result.addIteration( iterationTime.longValue() );
+      }
+      results.add( result );
+    }
+    return ( ITestExecutionResult[] )results.toArray( new ITestExecutionResult[ 0 ] );
   }
 }
