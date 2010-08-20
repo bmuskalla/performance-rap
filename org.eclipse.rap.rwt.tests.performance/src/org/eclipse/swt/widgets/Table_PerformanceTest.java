@@ -1,22 +1,17 @@
-package org.eclipse.rap.rwt.tests.performance;
+package org.eclipse.swt.widgets;
 
-import org.eclipse.rap.rwt.performance.PerformanceTest;
+import org.eclipse.rap.rwt.performance.PerformanceTestCase;
 import org.eclipse.rwt.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.widgets.tablekit.TableLCA;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
-public class Table_PerformanceTest extends PerformanceTest {
+public class Table_PerformanceTest extends PerformanceTestCase {
 
   public void testRemoveAll() throws Exception {
     Display display = new Display();
     Shell shell = new Shell( display );
     final Table table = new Table( shell, SWT.SINGLE | SWT.FULL_SELECTION );
     Runnable setup = new Runnable() {
-
       public void run() {
         for( int i = 0; i < 50; i++ ) {
           TableItem tableItem = new TableItem( table, SWT.NONE );
@@ -24,14 +19,13 @@ public class Table_PerformanceTest extends PerformanceTest {
         }
       }
     };
-    Runnable testable = new Runnable() {
-
+    Runnable test = new Runnable() {
       public void run() {
         table.removeAll();
       }
     };
-    measuredRun( setup, testable, 1000 );
-    meter.commit();
+    measuredRun( setup, test, 1000 );
+    assertPerformance();
   }
 
   public void testComputeSize() throws Exception {
@@ -47,7 +41,7 @@ public class Table_PerformanceTest extends PerformanceTest {
       }
     };
     measuredRun( testable, 1000 );
-    meter.commit();
+    assertPerformance();
   }
 
   public void testSelectAll() throws Exception {
@@ -70,8 +64,8 @@ public class Table_PerformanceTest extends PerformanceTest {
         table.selectAll();
       }
     };
-    measuredRun( setup, testable, 1000 );
-    meter.commit();
+    measuredRun( setup, testable, 10 );
+    assertPerformance();
   }
 
   public void testLCAPerformance() throws Exception {
@@ -96,6 +90,6 @@ public class Table_PerformanceTest extends PerformanceTest {
       }
     };
     measuredRun( testable, 100 );
-    meter.commit();
+    assertPerformance();
   }
 }

@@ -1,15 +1,15 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.rap.rwt.performance.PerformanceTest;
+import org.eclipse.rap.rwt.performance.PerformanceTestCase;
 import org.eclipse.swt.SWT;
 
-public class Tree_PerformanceTest extends PerformanceTest {
+public class Tree_PerformanceTest extends PerformanceTestCase {
 
   public void testFlatIndex() throws Exception {
     Display display = new Display();
     Shell shell = new Shell( display );
     final Tree tree = new Tree( shell, SWT.SINGLE | SWT.FULL_SELECTION );
-    for( int i = 0; i < 500; i++ ) {
+    for( int i = 0; i < 200; i++ ) {
       TreeItem treeItem = new TreeItem( tree, SWT.NONE );
       treeItem.setText( "foo " + i );
       treeItem.setExpanded( true );
@@ -28,6 +28,6 @@ public class Tree_PerformanceTest extends PerformanceTest {
       }
     };
     measuredRun( testable, 1000 );
-    meter.commit();
+    assertPerformance();
   }
 }

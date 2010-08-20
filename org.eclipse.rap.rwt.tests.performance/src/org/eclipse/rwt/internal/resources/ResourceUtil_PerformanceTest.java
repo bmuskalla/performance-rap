@@ -3,9 +3,9 @@ package org.eclipse.rwt.internal.resources;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.rap.rwt.performance.PerformanceTest;
+import org.eclipse.rap.rwt.performance.PerformanceTestCase;
 
-public class ResourceUtil_PerformanceTest extends PerformanceTest {
+public class ResourceUtil_PerformanceTest extends PerformanceTestCase {
 
   public void testReadBinary() throws Exception {
     Runnable testable = new Runnable() {
@@ -22,7 +22,7 @@ public class ResourceUtil_PerformanceTest extends PerformanceTest {
         }
       }
     };
-    measuredRun( testable, 1000 );
-    meter.commit();
+    measuredRun( testable, 100 );
+    assertPerformance();
   }
 }
