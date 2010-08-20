@@ -5,15 +5,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-public class PerformanceMeter {
+public class PerformanceStopWatch {
 
   private long startTime;
   private long endTime;
-  private List frames;
+  private List<Long> frames;
   private final TestCase testCase;
 
-  public PerformanceMeter( TestCase test ) {
-    frames = new ArrayList();
+  public PerformanceStopWatch( TestCase test ) {
+    frames = new ArrayList<Long>();
     testCase = test;
   }
 
@@ -34,9 +34,10 @@ public class PerformanceMeter {
     long sum = 0;
     long min = Integer.MAX_VALUE;
     long max = 0;
+    long[] resultFrames = new long[frames.size()];
     for( int i = 0; i < frames.size(); i++ ) {
       long frameTime = ( ( Long )frames.get( i ) ).longValue();
-      System.out.println( "Frame " + i + ": " + formatTime( frameTime ) );
+      resultFrames[i] = frameTime;
       sum = sum + frameTime;
       min = Math.min( min, frameTime );
       max = Math.max( max, frameTime );
@@ -48,7 +49,7 @@ public class PerformanceMeter {
     System.out.println( "Total time: " + formatTime( sum ) );
     System.out.println( "" );
     IPerformanceStorage storage = StorageFactory.createPerformanceStorage();
-    storage.putResults( testCase, frames );
+    storage.putResults( testCase, resultFrames );
   }
 
   private String formatTime( long time ) {

@@ -2,7 +2,6 @@ package org.eclipse.rap.rwt.performance.file;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,9 +19,10 @@ import org.eclipse.rap.rwt.performance.result.TestExecutionResult;
 
 public class FilePerformanceStorage implements IPerformanceStorage {
 
-  private String FILE_NAME = "/home/bmuskalla/Desktop/results.txt";
+  private static final String SEPARATOR = ";";
+  private String FILE_NAME = System.getProperty( "user.home" ) + "/results.csv";
 
-  public void putResults( final TestCase test, final List frames ) {
+  public void putResults( final TestCase test, final long[] frames ) {
     Writer out = null;
     try {
       FileWriter writer = new FileWriter( FILE_NAME, true );
@@ -34,11 +34,12 @@ public class FilePerformanceStorage implements IPerformanceStorage {
       try {
         out.close();
       } catch( IOException e ) {
+        throw new RuntimeException( e );
       }
     }
   }
 
-  private void writeResult( Writer out, TestCase test, List frames )
+  private void writeResult( Writer out, TestCase test, long[] frames )
     throws IOException
   {
     String className = test.getClass().getName();
@@ -54,45 +55,23 @@ public class FilePerformanceStorage implements IPerformanceStorage {
   }
 
   private void writeSeparator( Writer out ) throws IOException {
-    out.write( "|" );
+    out.write( SEPARATOR );
   }
 
-  private void writeResults( Writer out, List frames ) throws IOException {
-    for( int i = 0; i < frames.size(); i++ ) {
-      Long frameTime = ( Long )frames.get( i );
-      out.write( String.valueOf( frameTime ) );
+  private void writeResults( Writer out, long[] frames ) throws IOException {
+    for( int i = 0; i < frames.length; i++ ) {
+      long frameTime = frames[ i ];
+      out.write( String.valueOf( getTimeInMilliSeconds( frameTime ) ) );
       writeSeparator( out );
     }
   }
 
-  public List getAggregatedResults( String testName ) {
-    List results = new ArrayList();
-    try {
-      FileReader fr = new FileReader( FILE_NAME );
-      BufferedReader br = new BufferedReader( fr );
-      String s;
-      while( ( s = br.readLine() ) != null ) {
-        if( s.startsWith( testName ) ) {
-          String[] values = s.split( "\\|" );
-          long sum = 0;
-          for( int i = 1; i < values.length; i++ ) {
-            String frame = values[ i ];
-            sum = sum + Long.valueOf( frame ).longValue();
-          }
-          results.add( Long.valueOf( sum / values.length - 1 ) );
-        }
-      }
-      fr.close();
-    } catch( FileNotFoundException e ) {
-      e.printStackTrace();
-    } catch( IOException e ) {
-      e.printStackTrace();
-    }
-    return results;
+  private long getTimeInMilliSeconds( long frameTime ) {
+    return frameTime / 1000 / 1000;
   }
 
   private String[] getFileContents() {
-    List lines = new ArrayList();
+    List<String> lines = new ArrayList<String>();
     try {
       FileReader fr = new FileReader( FILE_NAME );
       BufferedReader br = new BufferedReader( fr );
@@ -101,26 +80,24 @@ public class FilePerformanceStorage implements IPerformanceStorage {
         lines.add( s );
       }
     } catch( Exception e ) {
-      e.printStackTrace();
+      throw new RuntimeException( e );
     }
     return ( String[] )lines.toArray( new String[ lines.size() ] );
   }
 
   public ITestExecutionResult[] getAggregatedResults() {
     String[] lines = getFileContents();
-    Map results = new HashMap();
-    for( int i1 = 0; i1 < lines.length; i1++ ) {
-      String string = lines[ i1 ];
-      String[] columns = string.split( "\\|" );
+    Map<String, ITestExecutionResult> results = new HashMap<String, ITestExecutionResult>();
+    for( int l = 0; l < lines.length; l++ ) {
+      String string = lines[ l ];
+      String[] columns = string.split( SEPARATOR );
       String testName = columns[ 0 ];
-      
       ITestExecutionResult result;
-      if( results.containsKey( testName )) {
+      if( results.containsKey( testName ) ) {
         result = ( ITestExecutionResult )results.get( testName );
       } else {
         result = new TestExecutionResult( testName );
       }
-      
       long sum = 0;
       for( int i = 1; i < columns.length; i++ ) {
         String frame = columns[ i ];
@@ -130,6 +107,11 @@ public class FilePerformanceStorage implements IPerformanceStorage {
       result.addIteration( sum );
       results.put( testName, result );
     }
-    return (org.eclipse.rap.rwt.performance.result.ITestExecutionResult[] )results.values().toArray( new ITestExecutionResult[ 0 ] );
+    return ( org.eclipse.rap.rwt.performance.result.ITestExecutionResult[] )results.values()
+      .toArray( new ITestExecutionResult[ 0 ] );
+  }
+
+  public void dispose() throws Exception {
+    // nothing to do
   }
 }

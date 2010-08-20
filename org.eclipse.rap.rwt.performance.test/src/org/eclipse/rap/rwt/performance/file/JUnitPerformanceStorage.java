@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -17,7 +16,7 @@ public class JUnitPerformanceStorage implements IPerformanceStorage {
 
   private String WORKSPACE = "/home/bmuskalla/.hudson/jobs/junit-performance/workspace/";
 
-  public void putResults( final TestCase test, final List frames ) {
+  public void putResults( final TestCase test, final long[] frames ) {
     Writer out = null;
     try {
       FileWriter writer = new FileWriter( WORKSPACE + getFileName( test ), true );
@@ -37,7 +36,7 @@ public class JUnitPerformanceStorage implements IPerformanceStorage {
     return "TEST-" + test.getClass().getName() + ".xml";
   }
 
-  private void writeResult( Writer out, TestCase test, List frames )
+  private void writeResult( Writer out, TestCase test, long[] frames )
     throws IOException
   {
     String testName = getClassName( test );
@@ -78,15 +77,16 @@ public class JUnitPerformanceStorage implements IPerformanceStorage {
     }
   }
 
-  private void writeResults( Writer out, TestCase test, List frames )
+  private void writeResults( Writer out, TestCase test, long[] frames )
     throws IOException
   {
     long sum = 0;
-    for( int i = 0; i < frames.size(); i++ ) {
-      Long frameTime = ( Long )frames.get( i );
-      sum = ( ( frameTime.longValue() / 1000 ) / 1000 ) / 1000;
+    for( int i = 0; i < frames.length; i++ ) {
+      long frameTime = frames[ i ];
+      sum = ( ( frameTime / 1000 ) / 1000 ) / 1000;
+      
     }
-    long avg = sum / frames.size();
+    long avg = sum / frames.length;
     out.write( "<testcase time=\""
                + avg
                + "\" classname=\""
@@ -98,6 +98,10 @@ public class JUnitPerformanceStorage implements IPerformanceStorage {
 
   public ITestExecutionResult[] getAggregatedResults() {
     throw new UnsupportedOperationException();
+  }
+  
+  public void dispose() throws Exception {
+    // nothing to do
   }
 
 }

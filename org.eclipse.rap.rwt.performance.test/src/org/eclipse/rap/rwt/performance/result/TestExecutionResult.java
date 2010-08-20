@@ -7,11 +7,11 @@ import java.util.List;
 public class TestExecutionResult implements ITestExecutionResult {
 
   private String name;
-  private List iterations;
+  private List<Long> iterations;
 
   public TestExecutionResult( String testName ) {
     name = testName;
-    iterations = new ArrayList();
+    iterations = new ArrayList<Long>();
   }
 
   public String getName() {
@@ -19,7 +19,7 @@ public class TestExecutionResult implements ITestExecutionResult {
   }
 
   public void addIteration( long ms ) {
-    iterations.add( Long.valueOf( ms ) );
+    iterations.add( new Long( ms ) );
   }
 
   public long computeAverage() {
@@ -28,7 +28,11 @@ public class TestExecutionResult implements ITestExecutionResult {
       Long iterationTime = ( Long )iterations.get( i );
       sum = sum + iterationTime.longValue();
     }
-    return sum / iterations.size();
+    return getTimeinMilliseconds( sum / iterations.size() );
+  }
+
+  private long getTimeinMilliseconds( long l ) {
+    return l / 1000 / 1000;
   }
 
   public long[] getIterations() {
@@ -52,6 +56,6 @@ public class TestExecutionResult implements ITestExecutionResult {
       long leftValue = sortedList[ median - 1 ].longValue();
       result = ( leftValue + rightValue ) / 2;
     }
-    return result;
+    return getTimeinMilliseconds( result );
   }
 }

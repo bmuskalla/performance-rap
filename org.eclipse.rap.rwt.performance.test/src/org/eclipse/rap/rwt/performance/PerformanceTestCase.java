@@ -4,13 +4,13 @@ import org.eclipse.rwt.Fixture;
 
 import junit.framework.TestCase;
 
-public class PerformanceTest extends TestCase {
+public class PerformanceTestCase extends TestCase {
 
-  protected PerformanceMeter meter;
+  protected PerformanceStopWatch watch;
 
   protected void setUp() throws Exception {
     Fixture.setUp();
-    meter = new PerformanceMeter( this );
+    watch = new PerformanceStopWatch( this );
   }
 
   protected void tearDown() throws Exception {
@@ -20,13 +20,15 @@ public class PerformanceTest extends TestCase {
   public void measuredRun( Runnable setup, Runnable testable, int times ) {
     for( int i = 0; i < times; i++ ) {
       setup.run();
-      meter.start();
+      watch.start();
       testable.run();
-      meter.stop();
-      meter.commitFrame();
+      watch.stop();
+      watch.commitFrame();
     }
+    watch.commit();
   }
 
+  
   public void measuredRun( Runnable testable, int times ) {
     Runnable nullRunnable = new Runnable() {
 
@@ -34,5 +36,11 @@ public class PerformanceTest extends TestCase {
       }
     };
     measuredRun( nullRunnable, testable, times );
+  }
+  
+  public void assertPerformance() {
+    // TODO
+    IPerformanceStorage storage = StorageFactory.createPerformanceStorage();
+    storage.getAggregatedResults();
   }
 }

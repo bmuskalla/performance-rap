@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -20,16 +18,16 @@ public class H2PerformanceStorage implements IPerformanceStorage {
   private static final String PASSWORD = "";
   private Connection con;
 
-  public void putResults( TestCase test, List frames ) {
+  public void putResults( TestCase test, long[] frames ) {
     int testId = putTest( test );
     int runId = putTestRun( testId );
     putFrames( runId, frames );
   }
 
-  private void putFrames( int runId, List frames ) {
-    for( Iterator iterator = frames.iterator(); iterator.hasNext(); ) {
-      Long frameTime = ( Long )iterator.next();
-      putFrame( runId, frameTime.longValue() );
+  private void putFrames( int runId, long[] frames ) {
+    for( int i = 0; i < frames.length; i++ ) {
+      long frameTime = frames[ i ];
+      putFrame( runId, frameTime );
     }
   }
 
@@ -99,10 +97,6 @@ public class H2PerformanceStorage implements IPerformanceStorage {
     return result;
   }
 
-  public List getAggregatedResults( String testName ) {
-    return null;
-  }
-
   public H2PerformanceStorage() {
     try {
       Class.forName( "org.h2.Driver" );
@@ -115,4 +109,9 @@ public class H2PerformanceStorage implements IPerformanceStorage {
     throw new UnsupportedOperationException();
   }
 
+  public void dispose() throws Exception {
+    if( con != null ) {
+      con.close();
+    }
+  }
 }
